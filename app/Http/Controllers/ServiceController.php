@@ -46,7 +46,9 @@ class ServiceController extends Controller
         $banners = BannerImage::select('banner_image as url')->get();
         
         foreach($banners as $key => $value){
-            $banners[$key]->url = env('APP_URL').'/public/uploads/'.$value->url;
+          $banners[$key]->url = env('APP_URL').'uploads/'.$value->url;            
+          // $banners[$key]->url = env('APP_URL').'/public/uploads/'.$value->url;
+
         }
         
         $order['active'] = Order::where('customer_id',$input['customer_id'])->where('status','!=',7)->count();
