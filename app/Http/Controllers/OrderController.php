@@ -20,6 +20,7 @@ use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
 use Kreait\Firebase\Database;
 use App\FcmNotificationMessage;
+use Carbon\Carbon;
 use Cartalyst\Stripe\Stripe;
 class OrderController extends Controller
 {
@@ -97,8 +98,9 @@ class OrderController extends Controller
 		}
 		$input['items'] = json_encode($item_names, JSON_UNESCAPED_SLASHES);
 		$input['items'] = preg_replace('/\\\"/',"\"", $input['items']);
-        $input['delivery_date'] = date('Y-m-d', strtotime($input['delivery_date']));
-        $input['pickup_date'] = date('Y-m-d', strtotime($input['pickup_date']));
+    $input['delivery_date'] =Carbon::createFromFormat('d/F/Y', $input['delivery_date'])->format('Y-m-d');
+    $input['pickup_date'] =Carbon::createFromFormat('d/F/Y', $input['pickup_date'])->format('Y-m-d');
+    
         $order = Order::create($input);
         $order_id = str_pad($order->id, 5, "0", STR_PAD_LEFT);
         Order::where('id',$order->id)->update([ 'order_id'=>$order_id]);
