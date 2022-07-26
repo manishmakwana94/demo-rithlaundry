@@ -7,6 +7,8 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class ZoneController extends AdminController
 {
@@ -30,12 +32,11 @@ class ZoneController extends AdminController
         $grid->column('fast_delivery_charge', __('Fast Delivery Charge'));
         $grid->column('min_checkout_amount', __('Min Checkout Amount'));
         $grid->column('name', __('Name'));
-
-        $grid->column('Polygon')->display(function () {
-            return "<a href='/admin/create_zones/".$this->id."'><span class='label label-warning'>Create Polygon</span></a>";
+        $grid->column('Polygon')->display(function () {;
+            return "<a href='".URL::to('/')."/admin/create_zones/".$this->id."'><span class='label label-warning'>Create Polygon</span></a>";
         });
         $grid->column('View Polygon')->display(function () {
-            return "<a href='/admin/view_zones/".$this->id."'><span class='label label-warning'>View Polygon</span></a>";
+            return "<a href='".URL::to('/')."/admin/view_zones/".$this->id."'><span class='label label-warning'>View Polygon</span></a>";
         });
 
         $grid->disableExport();
@@ -92,5 +93,41 @@ class ZoneController extends AdminController
        });
 
         return $form;
+    }
+    protected function create_zones($id)
+    {
+      
+        return view('zones.create_zones',compact('id'));
+    }
+
+    protected function view_zones($id)
+    {
+        return view('zones.view_service_zones')->with(['id'=>$id]);
+    }
+
+    function save_polygon(Request $request)
+    {
+      $coordsrc = $request->coordStr;
+      $polygon = Zone::findOrFail($request->id);
+      $polygon->polygon = $coordsrc;
+      $polygon->save();
+      return json_encode(['success'=>"success create"]);
+    }
+    function get_polygon(Request $request)
+    {
+      $id = $request->id;
+  
+      // $polygon = Zone::findOrFail($request->id)->polygon;
+      $latlongdata = [];
+      $polygon = Zone::findOrFail($id)->polygon;
+       $data =  explode(";" , rtrim($polygon, ';'));
+       foreach ($data as $key => $values) {
+        $latlong =  explode("," , rtrim($values, ','));
+          $latlongdata[] = [
+            'lat'=>  $latlong[0],
+            'lng' => $latlong[1] 
+          ];
+      }
+      return json_encode(['success'=>"success create","data" => $latlongdata]);
     }
 }

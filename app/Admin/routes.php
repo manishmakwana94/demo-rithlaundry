@@ -32,4 +32,9 @@ Route::group([
     $router->resource('regions', RegionController::class);
     $router->resource('zones', ZoneController::class);
     $router->resource('addresses', AddressController::class);
+    $router->post('save_polygon', 'ZoneController@save_polygon')->name('admin.save_polygon');
+    $router->get('create_zones/{id}', 'ZoneController@create_zones')->name('admin.create_zones');
+    $router->get('view_zones/{id}', 'ZoneController@view_zones')->name('admin.view_zones');
+    $router->post('get_polygon', 'ZoneController@get_polygon')->name('admin.get_polygon');
+
 });

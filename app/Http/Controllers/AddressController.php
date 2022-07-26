@@ -40,7 +40,7 @@ class AddressController extends Controller
     public function store(Request $request)
     {   
         $input = $request->all();
-
+       
         $validator =  Validator::make($input,[
             'customer_id' => 'required',
             'address' => 'required',
@@ -51,8 +51,9 @@ class AddressController extends Controller
         if($validator->fails()){
             return $this->sendError($validator->errors());
         }
+       
         $check = $this->find_in_polygon($input['latitude'],$input['longitude']);
-        //print_r($check);exit;
+         dd($check);
         if(!$check){
             return response()->json([
                 "message" => 'Sorry at this moment, our service is unavailable in your area',
