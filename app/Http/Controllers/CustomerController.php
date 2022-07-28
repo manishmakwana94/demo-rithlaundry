@@ -550,4 +550,36 @@ class CustomerController extends Controller
             ]);
         }
     }
+    public function profile_picture_update(Request $request){
+
+      $input = $request->all();
+      $validator = Validator::make($input, [
+          'customer_id' => 'required',
+          'profile_picture' => 'required'
+      ]);
+
+      if ($validator->fails()) {
+          return $this->sendError($validator->errors());
+      }
+
+      if ($request->hasFile('profile_picture')) {
+          $image = $request->file('profile_picture');
+          $name = time().'.'.$image->getClientOriginalExtension();
+          $destinationPath = public_path('/uploads/images');
+          $image->move($destinationPath, $name);
+          if(Customer::where('id',$input['customer_id'])->update([ 'profile_picture' => 'images/'.$name ])){
+              return response()->json([
+                  "result" => Customer::select('id', 'customer_name','phone_number','phone_with_code','email','profile_picture','status')->where('id',$input['customer_id'])->first(),
+                  "message" => 'Success',
+                  "status" => 1
+              ]);
+          }else{
+              return response()->json([
+                  "message" => 'Sorry something went wrong...',
+                  "status" => 0
+              ]);
+          }
+      }
+
+  }
 }

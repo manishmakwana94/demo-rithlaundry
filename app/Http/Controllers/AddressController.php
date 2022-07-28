@@ -9,6 +9,8 @@ use App\Models\AppSetting;
 use App\Models\Area;
 use App\Models\Region;
 use App\Models\Zone;
+use Illuminate\Support\Facades\URL;
+
 class AddressController extends Controller
 {
     /**
@@ -53,7 +55,7 @@ class AddressController extends Controller
         }
        
         $check = $this->find_in_polygon($input['latitude'],$input['longitude']);
-         dd($check);
+        
         if(!$check){
             return response()->json([
                 "message" => 'Sorry at this moment, our service is unavailable in your area',
@@ -62,7 +64,7 @@ class AddressController extends Controller
         }
         $url = 'https://maps.googleapis.com/maps/api/staticmap?center='.$input['latitude'].','.$input['longitude'].'&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C'.$input['latitude'].','.$input['longitude'].'&key='.env('MAP_KEY');
             $img = 'static_map/'.md5(time()).'.png';
-            file_put_contents('uploads/'.$img, file_get_contents($url));
+            file_put_contents(public_path().'/'.'uploads/'.$img, file_get_contents($url));
 
         $input['static_map'] = $img;
         $input['status'] = 1;
